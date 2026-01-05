@@ -63,7 +63,7 @@ export class ProductsService {
     return this.prisma.product.delete({ where: { id } });
   }
 
-async adjustStock(productId: number, dto: AdjustStockDto) {
+async adjustStock(productId: number, dto: AdjustStockDto, userId: number,) {
   return this.prisma.$transaction(async (tx) => {
     const product = await tx.product.findUnique({ where: { id: productId } });
     if (!product) throw new NotFoundException('Product not found');
@@ -77,13 +77,14 @@ async adjustStock(productId: number, dto: AdjustStockDto) {
       include: { category: true },
     });
 
-    await tx.stockMovement.create({
-      data: {
-        productId,
-        delta: dto.delta,
-        reason: dto.reason,
-      },
-    });
+await tx.stockMovement.create({
+  data: {
+    productId,
+    delta: dto.delta,
+    reason: dto.reason,
+    createdByUserId: userId,
+  },
+});
 
     return updatedProduct;
   });

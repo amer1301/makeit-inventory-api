@@ -13,6 +13,8 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { AdjustStockDto } from './dto/adjust-stock.dto';
+import { UseGuards, Req } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('products')
 export class ProductsController {
@@ -46,11 +48,13 @@ getStockMovements(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
   }
 
-  @Patch(':id/stock')
-  adjustStock(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: AdjustStockDto,
-  ) {
-    return this.productsService.adjustStock(id, dto);
-  }
+@UseGuards(JwtAuthGuard)
+@Patch(':id/stock')
+adjustStock(
+  @Param('id', ParseIntPipe) id: number,
+  @Body() dto: AdjustStockDto,
+  @Req() req: any,
+) {
+  return this.productsService.adjustStock(id, dto, req.user.id);
+}
 }
