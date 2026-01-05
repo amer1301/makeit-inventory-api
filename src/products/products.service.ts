@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { AdjustStockDto } from './dto/adjust-stock.dto';
 
 @Injectable()
 export class ProductsService {
@@ -29,7 +30,7 @@ export class ProductsService {
       data: {
         name: dto.name,
         description: dto.description,
-        price: dto.price, // Prisma Decimal: number funkar fint här
+        price: dto.price,
         imageUrl: dto.imageUrl,
         stockQuantity: dto.stockQuantity ?? 0,
         sku: dto.sku,
@@ -40,7 +41,6 @@ export class ProductsService {
   }
 
   async update(id: number, dto: UpdateProductDto) {
-    // valfritt men snyggt: 404 om produkten saknas
     await this.findOne(id);
 
     return this.prisma.product.update({
@@ -59,9 +59,41 @@ export class ProductsService {
   }
 
   async remove(id: number) {
-    // 404 om saknas
     await this.findOne(id);
-
     return this.prisma.product.delete({ where: { id } });
   }
+
+async adjustStock(productId: number, dto: AdjustStockDto) {
+  return this.prisma.$transaction(async (tx) => {
+    const product = await tx.product.findUnique({ where: { id: productId } });
+    if (!product) throw new NotFoundException('Product not found');
+
+    const nextQty = product.stockQuantity + dto.delta;
+    if (nextQty < 0) throw new BadRequestException('Stock cannot be negative');
+
+    const updatedProduct = await tx.product.update({
+      where: { id: productId },
+      data: { stockQuantity: nextQty },
+      include: { category: true },
+    });
+
+    await tx.stockMovement.create({
+      data: {
+        productId,
+        delta: dto.delta,
+        reason: dto.reason,
+      },
+    });
+
+    return updatedProduct;
+  });
+}
+
+getStockMovements(productId: number) {
+  return this.prisma.stockMovement.findMany({
+    where: { productId },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+  });
+}
 }

@@ -5,12 +5,14 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { AdjustStockDto } from './dto/adjust-stock.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -21,10 +23,10 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.productsService.findOne(id);
-  }
+@Get(':id/stock-movements')
+getStockMovements(@Param('id', ParseIntPipe) id: number) {
+  return this.productsService.getStockMovements(id);
+}
 
   @Post()
   create(@Body() dto: CreateProductDto) {
@@ -42,5 +44,13 @@ export class ProductsController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
+  }
+
+  @Patch(':id/stock')
+  adjustStock(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: AdjustStockDto,
+  ) {
+    return this.productsService.adjustStock(id, dto);
   }
 }
