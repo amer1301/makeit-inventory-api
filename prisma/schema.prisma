@@ -1,14 +1,62 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      UserRole @default(STAFF)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stockMovements StockMovement[]
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  price         Decimal
+  imageUrl      String
+  stockQuantity Int      @default(0)
+  sku           String   @unique
+  categoryId    Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category       Category       @relation(fields: [categoryId], references: [id])
+  stockMovements StockMovement[]
+}
+
+model StockMovement {
+  id              Int      @id @default(autoincrement())
+  productId       Int
+  delta           Int
+  reason          String
+  createdByUserId Int
+  createdAt       DateTime @default(now())
+
+  product   Product @relation(fields: [productId], references: [id])
+  createdBy User    @relation(fields: [createdByUserId], references: [id])
 }
