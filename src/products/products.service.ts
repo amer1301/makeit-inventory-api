@@ -25,20 +25,21 @@ export class ProductsService {
     return product;
   }
 
-  create(dto: CreateProductDto) {
-    return this.prisma.product.create({
-      data: {
-        name: dto.name,
-        description: dto.description,
-        price: dto.price,
-        imageUrl: dto.imageUrl,
-        stockQuantity: dto.stockQuantity ?? 0,
-        sku: dto.sku,
-        categoryId: dto.categoryId,
-      },
-      include: { category: true },
-    });
-  }
+create(dto: CreateProductDto, userId: number) {
+  return this.prisma.product.create({
+    data: {
+      name: dto.name,
+      description: dto.description,
+      price: dto.price,
+      imageUrl: dto.imageUrl,
+      stockQuantity: dto.stockQuantity ?? 0,
+      sku: dto.sku,
+      categoryId: dto.categoryId,
+      createdByUserId: userId,
+    },
+    include: { category: true },
+  });
+}
 
   async update(id: number, dto: UpdateProductDto) {
     await this.findOne(id);

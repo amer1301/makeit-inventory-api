@@ -30,23 +30,23 @@ getStockMovements(@Param('id', ParseIntPipe) id: number) {
   return this.productsService.getStockMovements(id);
 }
 
-  @Post()
-  create(@Body() dto: CreateProductDto) {
-    return this.productsService.create(dto);
-  }
+@UseGuards(JwtAuthGuard)
+@Post()
+create(@Body() dto: CreateProductDto, @Req() req: any) {
+  return this.productsService.create(dto, req.user.id);
+}
 
-  @Put(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateProductDto,
-  ) {
-    return this.productsService.update(id, dto);
-  }
+@UseGuards(JwtAuthGuard)
+@Put(':id')
+update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
+  return this.productsService.update(id, dto);
+}
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.productsService.remove(id);
-  }
+@UseGuards(JwtAuthGuard)
+@Delete(':id')
+remove(@Param('id', ParseIntPipe) id: number) {
+  return this.productsService.remove(id);
+}
 
 @UseGuards(JwtAuthGuard)
 @Patch(':id/stock')

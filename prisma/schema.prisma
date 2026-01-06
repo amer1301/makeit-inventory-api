@@ -20,7 +20,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  stockMovements StockMovement[]
+  products       Product[]       @relation("UserProducts")
+  stockMovements StockMovement[] @relation("UserStockMovements")
 }
 
 model Category {
@@ -45,20 +46,22 @@ model Product {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  category       Category       @relation(fields: [categoryId], references: [id])
+  createdByUserId Int?
+  createdBy       User? @relation("UserProducts", fields: [createdByUserId], references: [id])
+
+  category       Category        @relation(fields: [categoryId], references: [id])
   stockMovements StockMovement[]
 }
 
 model StockMovement {
-  id              Int      @id @default(autoincrement())
-  productId       Int
-  delta           Int
-  reason          String
-  createdAt       DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  productId Int
+  delta     Int
+  reason    String
+  createdAt DateTime @default(now())
 
   createdByUserId Int?
-  createdBy       User?    @relation(fields: [createdByUserId], references: [id])
+  createdBy       User? @relation("UserStockMovements", fields: [createdByUserId], references: [id])
 
-  product         Product  @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 }
-
