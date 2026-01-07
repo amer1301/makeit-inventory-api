@@ -104,6 +104,11 @@ await tx.stockMovement.create({
 getStockMovements(productId: number) {
   return this.prisma.stockMovement.findMany({
     where: { productId },
+    include: {
+      createdBy: {
+        select: { role: true, email: true },
+      },
+    },
     orderBy: { createdAt: 'desc' },
     take: 50,
   });
