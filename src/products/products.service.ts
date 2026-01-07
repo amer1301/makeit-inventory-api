@@ -59,10 +59,20 @@ create(dto: CreateProductDto, userId: number) {
     });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
-    return this.prisma.product.delete({ where: { id } });
-  }
+async remove(id: number) {
+  await this.findOne(id);
+
+  return this.prisma.$transaction(async (tx) => {
+    await tx.stockMovement.deleteMany({
+      where: { productId: id },
+    });
+
+    return tx.product.delete({
+      where: { id },
+    });
+  });
+}
+
 
 async adjustStock(productId: number, dto: AdjustStockDto, userId: number,) {
   return this.prisma.$transaction(async (tx) => {

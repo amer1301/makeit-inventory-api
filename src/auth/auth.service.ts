@@ -7,32 +7,36 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
-  async register(email: string, password: string) {
-    const existing = await this.prisma.user.findUnique({ where: { email } });
-    if (existing) throw new BadRequestException('Email already in use');
+async register(email: string, password: string) {
+  const existing = await this.prisma.user.findUnique({ where: { email } });
+  if (existing) throw new BadRequestException('Email already in use');
 
-    const hashed = await bcrypt.hash(password, 10);
+  const hashed = await bcrypt.hash(password, 10);
 
-    const user = await this.prisma.user.create({
-      data: { email, password: hashed },
-      select: { id: true, email: true },
-    });
+  const user = await this.prisma.user.create({
+    data: { email, password: hashed },
+    select: { id: true, email: true, role: true },
+  });
 
-    return this.signToken(user.id, user.email);
-  }
+  return this.signToken(user.id, user.email, user.role);
+}
 
-  async login(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+async login(email: string, password: string) {
+  const user = await this.prisma.user.findUnique({
+    where: { email },
+    select: { id: true, email: true, password: true, role: true },
+  });
 
-    const ok = await bcrypt.compare(password, user.password);
-    if (!ok) throw new UnauthorizedException('Invalid credentials');
+  if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    return this.signToken(user.id, user.email);
-  }
+  const ok = await bcrypt.compare(password, user.password);
+  if (!ok) throw new UnauthorizedException('Invalid credentials');
 
-  private async signToken(userId: number, email: string) {
-    const payload = { sub: userId, email };
-    return { access_token: await this.jwtService.signAsync(payload) };
-  }
+  return this.signToken(user.id, user.email, user.role);
+}
+
+private async signToken(userId: number, email: string, role: string) {
+  const payload = { sub: userId, email, role };
+  return { access_token: await this.jwtService.signAsync(payload) };
+}
 }

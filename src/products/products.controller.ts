@@ -20,15 +20,23 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+ @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.productsService.findAll();
   }
 
-@Get(':id/stock-movements')
-getStockMovements(@Param('id', ParseIntPipe) id: number) {
-  return this.productsService.getStockMovements(id);
-}
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/stock-movements')
+  getStockMovements(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.getStockMovements(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.findOne(id);
+  }
 
 @UseGuards(JwtAuthGuard)
 @Post()
