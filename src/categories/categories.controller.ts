@@ -28,6 +28,11 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
+    @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.categoriesService.findOne(id);
+  }
+  
   // 🔒 ADMIN only: skapa kategori
   @Post()
   @Roles('ADMIN')
