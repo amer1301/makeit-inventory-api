@@ -41,3 +41,10 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
 Använd token i requests:
 Authorization: Bearer <token>
 
+## Endpoints
+### Products (skyddat)
+- GET /products – lista produkter
+- GET /products/:id – hämta en produkt
+- POST /products – skapa produkt
+- PUT /products/:id – uppdatera produkt
+- DELETE /products/:id – ta bort produkt
