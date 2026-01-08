@@ -29,7 +29,6 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
   "name": "Admin",
   "role": "ADMIN"
 }
-```json
 
 ## Login
 - Register: `POST /auth/register`
