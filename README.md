@@ -20,8 +20,11 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
 - körs normalt på: http://localhost:3000
 
 ## Auth
+
 Register: POST /auth/register
-Exempel body: {
+
+Exempel body:
+{
   "email": "admin@example.com",
   "password": "password123",
   "name": "Admin",
