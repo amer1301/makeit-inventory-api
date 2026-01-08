@@ -48,3 +48,19 @@ Authorization: Bearer <token>
 - POST /products – skapa produkt
 - PUT /products/:id – uppdatera produkt
 - DELETE /products/:id – ta bort produkt
+
+### Justera lagersaldo (separat endpoint)
+- PATCH /products/:id/stock
+Exempel body: 
+```json
+{"delta": 5,
+  "reason": "Inleverans"
+}
+```
+
+## Categories (skyddat)
+- GET /categories – lista kategorier
+- GET /categories/:id – hämta kategori
+- POST /categories – skapa kategori (ADMIN)
+- PUT /categories/:id – uppdatera kategori (ADMIN)
+- DELETE /categories/:id – ta bort kategori (ADMIN)
