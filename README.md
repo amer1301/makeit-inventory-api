@@ -21,9 +21,9 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
 
 ## Auth
 
-Register: POST /auth/register
-
-Exempel body:
+- Register: `POST /auth/register`
+- Exempel body:
+```json
 {
   "email": "admin@example.com",
   "password": "password123",
