@@ -20,7 +20,6 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
 - körs normalt på: http://localhost:3000
 
 ## Auth
-
 - Register: `POST /auth/register`
 - Exempel body:
 ```json
@@ -30,3 +29,16 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
   "name": "Admin",
   "role": "ADMIN"
 }
+```json
+
+## Login
+- Register: `POST /auth/register`
+- Exempel body:
+```json
+{
+  "accessToken": "JWT_TOKEN_HERE"
+}
+```
+Använd token i requests:
+Authorization: Bearer <token>
+
