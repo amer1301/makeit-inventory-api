@@ -13,11 +13,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // Detta blir req.user i controllers
-    // Se till atttoken signeras med { sub: user.id, email: user.email }
     return {
       id: payload.sub ?? payload.id,
       email: payload.email,
+      role: payload.role,
     };
   }
 }
