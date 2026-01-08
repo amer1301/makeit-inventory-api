@@ -29,7 +29,7 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
   "name": "Admin",
   "role": "ADMIN"
 }
-
+` ``` `
 ## Login
 - Register: `POST /auth/register`
 - Exempel body:
