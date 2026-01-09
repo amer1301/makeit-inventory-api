@@ -28,7 +28,8 @@ export class CategoriesController {
     return this.categoriesService.findAll();
   }
 
-    @Get(':id')
+  @Get(':id')
+  @Roles('ADMIN', 'STAFF')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.findOne(id);
   }
