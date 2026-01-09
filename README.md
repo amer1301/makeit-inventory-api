@@ -25,9 +25,7 @@ REST API för lagerhantering (produkter, kategorier, lagerjustering, användare)
 ```json
 {
   "email": "admin@example.com",
-  "password": "password123",
-  "name": "Admin",
-  "role": "ADMIN"
+  "password": "password123"
 }
 ```
 ## Login
