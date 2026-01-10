@@ -12,7 +12,7 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    // Om ingen @Roles(...) finns så släpper vi igenom
+    // Om ingen @Roles-dekorator är angiven tillåts åtkomst till routen
     if (!requiredRoles || requiredRoles.length === 0) return true;
 
     const request = context.switchToHttp().getRequest();

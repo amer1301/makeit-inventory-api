@@ -17,11 +17,11 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('categories')
-@UseGuards(JwtAuthGuard, RolesGuard) // ✅ skyddar alla category-routes
+// Guards appliceras på controller-nivå för att skydda samtliga category-endpoints
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  // ✅ STAFF + ADMIN: läsa kategorier
   @Get()
   @Roles('ADMIN', 'STAFF')
   findAll() {
@@ -33,15 +33,13 @@ export class CategoriesController {
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.findOne(id);
   }
-  
-  // 🔒 ADMIN only: skapa kategori
+
   @Post()
   @Roles('ADMIN')
   create(@Body() body: { name: string; description?: string }) {
     return this.categoriesService.create(body);
   }
 
-  // 🔒 ADMIN only: uppdatera kategori
   @Put(':id')
   @Roles('ADMIN')
   update(
@@ -51,7 +49,6 @@ export class CategoriesController {
     return this.categoriesService.update(id, body);
   }
 
-  // 🔒 ADMIN only: ta bort kategori
   @Delete(':id')
   @Roles('ADMIN')
   remove(@Param('id', ParseIntPipe) id: number) {

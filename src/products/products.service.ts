@@ -62,6 +62,7 @@ create(dto: CreateProductDto, userId: number) {
 async remove(id: number) {
   await this.findOne(id);
 
+  // Tar bort lagerhändelser och produkten i samma transaktion för att undvika "hängande" referenser
   return this.prisma.$transaction(async (tx) => {
     await tx.stockMovement.deleteMany({
       where: { productId: id },
@@ -75,11 +76,13 @@ async remove(id: number) {
 
 
 async adjustStock(productId: number, dto: AdjustStockDto, userId: number,) {
+  // Lagerjustering görs atomiskt i en transaktion: uppdaterar lagersaldo och skapar lagerhändelse samtidigt
   return this.prisma.$transaction(async (tx) => {
     const product = await tx.product.findUnique({ where: { id: productId } });
     if (!product) throw new NotFoundException('Product not found');
 
     const nextQty = product.stockQuantity + dto.delta;
+    // Förhindrar att lagersaldo blir negativt (dataintegritet)
     if (nextQty < 0) throw new BadRequestException('Stock cannot be negative');
 
     const updatedProduct = await tx.product.update({

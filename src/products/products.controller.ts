@@ -22,53 +22,47 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('products')
-@UseGuards(JwtAuthGuard, RolesGuard) // ✅ skyddar alla routes + roller
+// Guards appliceras på controller-nivå för att skydda samtliga produkt-endpoints
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  // ✅ STAFF + ADMIN: läsa produkter
   @Get()
   @Roles('ADMIN', 'STAFF')
   findAll() {
     return this.productsService.findAll();
   }
 
-  // ✅ STAFF + ADMIN: se lagerhistorik
   @Get(':id/stock-movements')
   @Roles('ADMIN', 'STAFF')
   getStockMovements(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.getStockMovements(id);
   }
 
-  // ✅ STAFF + ADMIN: läsa en produkt
   @Get(':id')
   @Roles('ADMIN', 'STAFF')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);
   }
 
-  // 🔒 ADMIN only: skapa produkt
   @Post()
   @Roles('ADMIN')
   create(@Body() dto: CreateProductDto, @Req() req: any) {
     return this.productsService.create(dto, req.user.id);
   }
 
-  // 🔒 ADMIN only: uppdatera produkt
   @Put(':id')
   @Roles('ADMIN')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
     return this.productsService.update(id, dto);
   }
 
-  // 🔒 ADMIN only: ta bort produkt
   @Delete(':id')
   @Roles('ADMIN')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
   }
-
-  // ✅ STAFF + ADMIN: justera lagersaldo
+// Separat endpoint för justering av lagersaldo för att tydliggöra affärslogiken
   @Patch(':id/stock')
   @Roles('ADMIN', 'STAFF')
   adjustStock(
